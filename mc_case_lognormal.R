@@ -1,7 +1,4 @@
-setwd("C:/Users/weichenw/Dropbox/robust/code_2019_Weichen")
 source("utl.R")
-set.seed(111)
-
 
 N = 1
 f11 = matrix(0, N, 6)

@@ -1,7 +1,4 @@
-setwd("/mhome/stats/t/zz385/robust")
 source("utl.R")
-set.seed(111)
-
 
 N = 1
 f11 = matrix(0, N, 6)

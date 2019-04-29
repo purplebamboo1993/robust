@@ -1,8 +1,7 @@
-setwd("C:/Users/weichenw/Dropbox/robust/code_2019_Weichen")
 source("utl.R")
-set.seed(111)
 
-N = 3
+
+N = 1
 f11 = matrix(0, N, 6)
 f12 = matrix(0, N, 6)
 f21 = matrix(0, N, 6)
@@ -184,111 +183,4 @@ for (d in c(20, 40, 60)) {
 
 save(f11, f12, f21, f22, f31, f32, f1_para, f2_para, f3_para, file="cs_CV_lognormal.RData")
 
-
-
-
-
-set.seed(222)
-
-N = 10
-g11 = matrix(0, N, 6)
-g12 = matrix(0, N, 6)
-g21 = matrix(0, N, 6)
-g22 = matrix(0, N, 6)
-g31 = matrix(0, N, 6)
-g32 = matrix(0, N, 6)
-
-
-
-d=20
-lambdac1 = mean(f1_para[,1])
-lambdac2 = lambdac1
-thc = mean(f1_para[,2])
-for (i in 1:6){
-    r=5
-    n=300*i
-    for (j in 1:N){
-        Theta_t = genTrueTheta(d)
-        #sigma=.5
-        #epsilon=rnorm(n, mean=0, sd=sigma)
-        #epsilon=randomt(n, 1)/64
-        sigma=3
-        epsilon=(exp(rnorm(n, 0, sigma))-exp(sigma^2/2)*rep(1,n))/1000
-        X=matrix(rnorm(n*d*d, 0, 1), n, d^2)
-        Y=X%*%Theta_t+epsilon
-        
-        lambda1=lambdac1*sqrt(d/n)
-        Theta1=prsm(Y, X, alpha=.9, beta=1, lambda=lambda1)
-        g11[j,i]=sqrt(sum((Theta1-Theta_t)^2))
-        
-        lambda2=lambdac2*sqrt(d/n)
-        th=thc*sqrt(n/d)
-        Theta2=prsm(truncate_abs(Y, tau=th), X, alpha=.9, beta=1, lambda=lambda2)        
-        g12[j,i]=sqrt(sum((Theta2-Theta_t)^2))
-
-        cat("=======", i, ",", j, "=======", "\n")
-    }    
-}
-
-d=40
-lambdac1 = mean(f2_para[,1])
-lambdac2 = lambdac1
-thc = mean(f2_para[,2])
-for (i in 1:6){
-    r=5
-    n=300*i
-    for (j in 1:N){
-        Theta_t = genTrueTheta(d)
-        #sigma=.5
-        #epsilon=rnorm(n, mean=0, sd=sigma)
-        #epsilon=randomt(n, 1)/64
-        sigma=3
-        epsilon=(exp(rnorm(n, 0, sigma))-exp(sigma^2/2)*rep(1,n))/1000
-        X=matrix(rnorm(n*d*d, 0, 1), n, d^2)
-        Y=X%*%Theta_t+epsilon
-        
-        lambda1=lambdac1*sqrt(d/n)
-        Theta1=prsm(Y, X, alpha=.9, beta=1, lambda=lambda1)
-        g21[j,i]=sqrt(sum((Theta1-Theta_t)^2))
-        
-        lambda2=lambdac2*sqrt(d/n)
-        th=thc*sqrt(n/d)
-        Theta2=prsm(truncate_abs(Y, tau=th), X, alpha=.9, beta=1, lambda=lambda2)        
-        g22[j,i]=sqrt(sum((Theta2-Theta_t)^2))
-        
-        cat("=======", i, ",", j, "=======", "\n")
-    }    
-}
-
-d=60
-lambdac1 = mean(f3_para[,1])
-lambdac2 = lambdac1
-thc = mean(f3_para[,2])
-for (i in 1:6){
-    r=5
-    n=300*i
-    for (j in 1:N){
-        Theta_t = genTrueTheta(d)
-        #sigma=.5
-        #epsilon=rnorm(n, mean=0, sd=sigma)
-        #epsilon=randomt(n, 1)/64
-        sigma=3
-        epsilon=(exp(rnorm(n, 0, sigma))-exp(sigma^2/2)*rep(1,n))/1000
-        X=matrix(rnorm(n*d*d, 0, 1), n, d^2)
-        Y=X%*%Theta_t+epsilon
-        
-        lambda1=lambdac1*sqrt(d/n)
-        Theta1=prsm(Y, X, alpha=.9, beta=1, lambda=lambda1)
-        g31[j,i]=sqrt(sum((Theta1-Theta_t)^2))
-        
-        lambda2=lambdac2*sqrt(d/n)
-        th=thc*sqrt(n/d)
-        Theta2=prsm(truncate_abs(Y, tau=th), X, alpha=.9, beta=1, lambda=lambda2)        
-        g32[j,i]=sqrt(sum((Theta2-Theta_t)^2))
-        
-        cat("=======", i, ",", j, "=======", "\n")
-    }    
-}
-
-save(g11, g12, g21, g22, g31, g32, file="cs_lognormal.RData")
 
