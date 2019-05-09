@@ -1,20 +1,24 @@
 source("utl.R")
 
 
-N = 1
+N = 1 # numeber of independent Monte Carlo experiments
+# Here we only run one Monte Carlo experiment.
+# We recommend the practioner to run this code with different seeds on multiple cores. 
+
 f11 = matrix(0, N, 6)
 f12 = matrix(0, N, 6)
 f21 = matrix(0, N, 6)
 f22 = matrix(0, N, 6)
 f31 = matrix(0, N, 6)
 f32 = matrix(0, N, 6)
-
 f1_para = matrix(0, N, 2)
 f2_para = matrix(0, N, 2)
 f3_para = matrix(0, N, 2)
 
 
 genTrueTheta = function(d){
+# Generate the groud truth of Theta
+
     r0=5    
     n0=100
     Z=matrix(rnorm(n0*d,0,1), n0, d)    
@@ -45,7 +49,10 @@ CV = function(Y,X,lambda){
 }
 
 
+
 CV_thresh = function(Y,X,th,lambda1){
+# The RCV approach
+
     fold = 5
     nn = floor(length(Y) / fold)
     CV_error = rep(0, fold)
@@ -66,23 +73,18 @@ CV_thresh = function(Y,X,th,lambda1){
 }
 
 
-for (d in c(20, 40, 60)) {
+for (d in c(20, 40, 60)) { # We investigate three different dimensions. 
     cat("### d =", d, "### \n")
     
-    f1 = matrix(0, N, 6)
-    f2 = matrix(0, N, 6)
-    para = matrix(0, N, 2)
+    f1 = matrix(0, N, 6) # statistical error of Theta.hat with original data
+    f2 = matrix(0, N, 6) # statistical error of Theta.hat with truncated data
+    para = matrix(0, N, 2) # lambda and tau 
   
     for (j in 1:N){
         n=300
         r=5
         Theta_t = genTrueTheta(d)
-        
-        #sigma=.5
-        #epsilon=rnorm(n, mean=0, sd=sigma)
         epsilon=randomt(n, 1)/64
-        #sigma=2.5
-        #epsilon=(exp(rnorm(n, 0, sigma))-exp(sigma^2/2)*rep(1,n))/1000
         X=matrix(rnorm(n*d*d, 0, 1), n, d^2)
         Y=X%*%Theta_t+epsilon
         
@@ -139,11 +141,7 @@ for (d in c(20, 40, 60)) {
         
         for (i in 1:6){
             n=300*i
-            #sigma=.5
-            #epsilon=rnorm(n, mean=0, sd=sigma)
             epsilon=randomt(n, 1)/64
-            #sigma=2.5
-            #epsilon=(exp(rnorm(n, 0, sigma))-exp(sigma^2/2)*rep(1,n))/1000
             X=matrix(rnorm(n*d*d, 0, 1), n, d^2)
             Y=X%*%Theta_t+epsilon
               
