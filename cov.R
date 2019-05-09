@@ -1,5 +1,3 @@
-setwd("C:/Users/weichenw/Dropbox/robust/code_2019_Weichen")
-
 Distribution = 't'
 #Distribution = 'normal'
 
