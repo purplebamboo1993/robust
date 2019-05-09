@@ -1,15 +1,19 @@
 Distribution = 't'
 #Distribution = 'normal'
+# Distribution can be either 't' or 'normal'. 
 
 
-#### find constant C
 set.seed(111)
 
 getEta = function(vals, tau) {
   return(mean(pmin(tau / vals, 1))) 
 }
 
+
 solveForTau_inner = function(vals,eta,lo,hi) {
+  # Use binary search to find tau
+  # lo: left end of the interval; hi: right end of the interval 
+
   mid = (lo+hi) / 2
   etaNow = getEta(vals, mid)
   if (abs(etaNow - eta) < 0.01) {
@@ -20,12 +24,16 @@ solveForTau_inner = function(vals,eta,lo,hi) {
   }
 }
 
+
 solveForTau = function(vals, eta) {
   lo = 0
   hi = max(vals)
   return(solveForTau_inner(vals,eta,lo,hi))
 }
 
+
+
+# Choose appropriate constant in front of the theoretical rate. 
 n = 100
 d = 100
 N = 100
@@ -40,7 +48,7 @@ for (i in 1:N){
   Y = X %*% D
 
   for (k in 1:3) {
-    eta = 0.7 + 0.1*(k-1)
+    eta = 0.7 + 0.1*(k-1) # different shrinkage level. 
     tauTarget = solveForTau(apply(Y,1,function(a) sum(a^4)^(1/4)), eta)
     C_select[k,i]= tauTarget * (log(d)/n)^(1/4)
   }
@@ -49,7 +57,7 @@ C_final = apply(C_select, 1, mean)
 print(C_final)
 
 
-### cov estimation
+# Covariance estimation
 set.seed(111)
 
 truncate=function(Y, tau){
@@ -69,19 +77,19 @@ truncate=function(Y, tau){
       Y1[i,]=y
     }
   }
-  return(list(Y1, dataRatio / n))
+  return(list(Y1, dataRatio / n)) # return the truncated data and magnitude ratio of preserved data. 
 }
 
 errtot1 = matrix(0, nrow=3, ncol=5)
-errtot2_7 = matrix(0, nrow=3, ncol=5)
+errtot2_7 = matrix(0, nrow=3, ncol=5) # Spectral-norm error 
 errtot2_8 = matrix(0, nrow=3, ncol=5)
 errtot2_9 = matrix(0, nrow=3, ncol=5)
-dataEffPerc_7 = matrix(0, nrow=3, ncol=5)
+dataEffPerc_7 = matrix(0, nrow=3, ncol=5) # Data with different effective percentages
 dataEffPerc_8 = matrix(0, nrow=3, ncol=5)
 dataEffPerc_9 = matrix(0, nrow=3, ncol=5)
 
 N = 100
-ratio.all = c(.2, .5, 1)
+ratio.all = c(.2, .5, 1) # dimension-to-sample-size ratio
 
 for (k in 1:3){
     
@@ -91,8 +99,8 @@ for (k in 1:3){
 
         n = 100 * j
         d = ratio * n
-        D = diag(c(2,  rep(1, d - 1)))
-        S = D %*% D
+        D = diag(c(2,  rep(1, d - 1))) 
+        S = D %*% D # True covariance
         
         error1 = rep(0, N)
         error2_7 = rep(0, N)
@@ -148,7 +156,7 @@ save(errtot1, errtot2_7,errtot2_8,errtot2_9, dataEffPerc_7,dataEffPerc_8,dataEff
 
 
 
-
+# Plot 
 
 lo = 0 # min(min(errtot1),min(errtot2))
 hi = max(max(errtot1),max(errtot2_7),max(errtot2_8),max(errtot2_9))
